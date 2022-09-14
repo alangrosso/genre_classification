@@ -15,13 +15,15 @@ def go(config: DictConfig):
     # You can get the path at the root of the MLflow project with this:
     root_path = hydra.utils.get_original_cwd()
 
-    # Check which steps we need to execute -> Para ejecutar solo algunas partes del pipeline
+    # Check which steps we need to execute
+    # Truco para ejecutar solo algunas partes del pipeline
     if isinstance(config["main"]["execute_steps"], str):
         # This was passed on the command line as a comma-separated list of steps
         steps_to_execute = config["main"]["execute_steps"].split(",")
     else:
-        assert isinstance(config["main"]["execute_steps"], list)
-        steps_to_execute = config["main"]["execute_steps"]
+        # assert isinstance(config["main"]["execute_steps"], list) # no funciona
+        # steps_to_execute = config["main"]["execute_steps"] # no funciona
+        steps_to_execute = list(config["main"]["execute_steps"])
 
     # Download step
     if "download" in steps_to_execute:
@@ -38,7 +40,7 @@ def go(config: DictConfig):
         )
 
     if "preprocess" in steps_to_execute:
-
+        
         _ = mlflow.run(
             os.path.join(root_path, "preprocess"),
             "main",
